@@ -218,7 +218,7 @@ function saveDistances(id, distances){
     var deferred = q.defer(),
         keys = Object.keys(distances),
         index = 0,
-        bulkSize = 30000
+        bulkSize = 20000
 
     function save(){
         var bulk = []
@@ -244,7 +244,7 @@ function saveDistances(id, distances){
 
         saveBulk(bulk)
             .then(function(){
-                updateProgress(index,keys.length, storedCompanies +  "\t stored current company: " + id + " \t Saving Links... ")
+                //updateProgress(index,keys.length, storedCompanies +  "\t stored current company: " + id + " \t Saving Links... ")
 
                 if(index >= keys.length)
                     deferred.resolve()
