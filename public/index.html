@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="ba">
+    <head>
+        <title>BA</title>
+        <base href="/index.html">
+
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="shortcut icon" href="assets/img/favicon/favicon.ico"/>
+        <link rel="manifest" href="/manifest.json">
+
+        <meta name="msapplication-TileColor" content="#1a77c1">
+        <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+        <meta name="theme-color" content="#1a77c1">
+
+
+        <!--FONT-->
+        <link rel="stylesheet" href="assets/libs/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="assets/libs/materialize/dist/css/materialize.min.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+
+
+        <script src="assets/libs/jquery/dist/jquery.js"></script>
+        <script src="assets/libs/d3/d3.min.js"></script>
+
+        <script src="assets/libs/angular/angular.js"></script>
+        <script src="assets/libs/angular-animate/angular-animate.js"></script>
+        <script src="assets/libs/angular-materialize/src/angular-materialize.js"></script>
+        <script src="assets/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
+
+        <script src="app.module.js"></script>
+        <script src="app.routes.js"></script>
+        <script src="components/graphAnalyser/graphAnalyserController.js"></script>
+
+        <script src="components/graphAnalyser/graphAnalyserProvider.js"></script>
+
+    </head>
+
+    <body>
+
+        <div ui-view class="content full-height">
+
+        </div>
+    </body>
+
+</html>

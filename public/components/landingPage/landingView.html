@@ -1,0 +1,16 @@
+<div class="landingPage">
+
+    <div class="contentWrapper">
+        <div class="contentText" ng-if="!tokenAvailable">
+            Hey, <br> <br>
+            freut mich, dass du es bis hierhin geschafft hast. Für meine Bachelorarbeit zu Thema <b>"Future Product Needs of Companies by Intelligent Clustering"</b> benötige <br>
+            ich Informationen von Unternehmen von LinkedIn. Hier kommst du ins Spiel. Wenn du einen LinkedIn Account hast wär es super wenn du mich unterstützt und auf den Button unten klickst. <br>
+            Der leitet dich weiter und fragt nach deiner Erlaubnis, auf dein Profil zugreifen zu dürfen. Ich werde keine deiner Informationen nutzen! <br>
+            Ich benötige deine Erlaubnis nur dafür, dass ich Informationsanfragen bei LinkedIn stellen kann, um die benötigten Unternehmensinformationen zu erhalten. <br>
+            Die Erlaubnis läuft automatisch aus. Solltest du noch weitere Fragen haben beantworte ich sie dir gern. Schreib mich einfach über Facebook oder mail@markus-petrykowski.de an.
+        </div>
+        <span class="thanks" ng-if="tokenAvailable">Danke {{name}}!</span>
+        <div class="registerButton" ng-click="register()">Teilnehmen</div>
+    </div>
+
+</div>

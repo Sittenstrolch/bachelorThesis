@@ -1,0 +1,301 @@
+{
+  "ba_companies_merged": {
+    "mappings": {
+      "company": {
+        "properties":{
+          "id": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "permalink": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "name": {
+            "type": "string"
+          },
+          "founded": {
+            "type": "long"
+          },
+          "employeeCount": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "industries": {
+            "properties": {
+              "name": {
+                "type": "string",
+                "index": "not_analyzed"
+              }
+            }
+          },
+          "role": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "logo": {
+            "type": "string",
+            "index": "no"
+          },
+
+          "locations": {
+            "properties": {
+              "city": {
+                "type": "string",
+                "index": "not_analyzed"
+              },
+              "countryCode": {
+                "type": "string",
+                "index": "not_analyzed"
+              },
+              "postalCode": {
+                "type": "string",
+                "index": "not_analyzed"
+              },
+              "street": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string",
+                "index": "not_analyzed"
+              },
+              "geo": {
+                "type": "geo_point",
+                "lat_lon": true
+              }
+
+              }
+            }
+          }
+
+
+
+        }
+      }
+    }
+  }
+
+
+{
+  "ba_companies_cb": {
+    "mappings": {
+      "company": {
+        "properties": {
+          "crunchbase_url": {
+            "type": "string"
+          },
+          "crunchbase_uuid": {
+            "type": "string"
+          },
+          "facebook_url": {
+            "type": "string"
+          },
+          "homepage_domain": {
+            "type": "string"
+          },
+          "homepage_url": {
+            "type": "string"
+          },
+          "linkedin_url": {
+            "type": "string"
+          },
+          "location_city": {
+            "type": "string"
+          },
+          "location_country_code": {
+            "type": "string"
+          },
+          "location_region": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "primary_role": {
+            "type": "string"
+          },
+          "profile_image_url": {
+            "type": "string"
+          },
+          "short_description": {
+            "type": "string"
+          },
+          "stock_symbol": {
+            "type": "string"
+          },
+          "twitter_url": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
+{
+  "ba_companies": {
+    "mappings": {
+      "company": {
+        "properties": {
+          "blogRssUrl": {
+            "type": "string"
+          },
+          "companyType": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "employeeCountRange": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "errorCode": {
+            "type": "long"
+          },
+          "foundedYear": {
+            "type": "long"
+          },
+          "id": {
+            "type": "long"
+          },
+          "industries": {
+            "properties": {
+              "_total": {
+                "type": "long"
+              },
+              "values": {
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "locations": {
+            "properties": {
+              "_total": {
+                "type": "long"
+              },
+              "values": {
+                "properties": {
+                  "address": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "countryCode": {
+                        "type": "string"
+                      },
+                      "postalCode": {
+                        "type": "string"
+                      },
+                      "street1": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "contactInfo": {
+                    "properties": {
+                      "phone1": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "logoUrl": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "numFollowers": {
+            "type": "long"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "specialties": {
+            "properties": {
+              "_total": {
+                "type": "long"
+              },
+              "values": {
+                "type": "string"
+              }
+            }
+          },
+          "squareLogoUrl": {
+            "type": "string"
+          },
+          "status": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "long"
+              },
+              "name": {
+                "type": "string"
+              },
+              "status": {
+                "type": "long"
+              },
+              "timestamp": {
+                "type": "long"
+              }
+            }
+          },
+          "stockExchange": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "ticker": {
+            "type": "string"
+          },
+          "twitterId": {
+            "type": "string"
+          },
+          "websiteUrl": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

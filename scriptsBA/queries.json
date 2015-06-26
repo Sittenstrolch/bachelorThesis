@@ -1,0 +1,32 @@
+{
+  "demandingCompanies": {
+        "filter": {
+          "exists": {
+            "field": "company"
+          }
+        },
+
+        "query":{
+          "match_phrase": {
+            "tag.demand": "true"
+          }
+
+        }
+      },
+  "cb_aggregation": {
+    "query": {
+      "match_phrase": {
+        "location_country_code": "GBR"
+      }
+    },
+    "aggs": {
+      "Countries": {
+        "terms": {
+          "field": "location_region",
+          "size": 0
+        }
+      }
+
+    }
+  }
+}

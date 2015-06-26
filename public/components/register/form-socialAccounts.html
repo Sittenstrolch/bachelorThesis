@@ -1,0 +1,18 @@
+<div class="socialAccountsForm">
+    <div class="alert-box alert radius" ng-show="error">
+        {{error}}
+    </div>
+    <div class="row" ng-repeat="(name, network) in socialAccounts">
+        <div class="small-12 columns">
+            <div class="row personal-settings-row">
+                <div class="medium-12 large-12 columns switchColumn">
+                    <ui-switch ng-class="network.registered && 'active' || 'inactive'" ng-click="registerAccount(name)" logo="network.icon" text="network.text"></ui-switch>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary registrationNext">Next</button>
+    <button class="warning registrationNext" ng-click="cancel()">Cancel</button>
+
+</div>

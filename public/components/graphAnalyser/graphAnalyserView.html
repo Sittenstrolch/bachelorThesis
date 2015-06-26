@@ -1,0 +1,63 @@
+<div class="graphHeader deep-orange lighten-2">
+    <span class="graphHeaderTitle">Company Graph Analysis</span>
+</div>
+
+<div class="graphAnalyser card" ng-show="showDetail">
+    <div class="card-content">
+        <div class="cardTitleWrapper row">
+            <span class="card-title black-text">{{companyDetail.name}}</span>
+            <img class="cardCompanyLogo" ng-src="{{companyDetail.logo}}">
+        </div>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Description</td>
+                    <td>This is a short description for the company Apple. Let me tell you this: "Great Products!"</td>
+                </tr>
+                <tr>
+                    <td>Employees</td>
+                    <td>From {{companyDetail.employeesMin}} to {{companyDetail.employeesMax}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="card-action">
+        <a href="{{companyDetail.link}}" target="_blank">Homepage</a>
+        <a href="#" ng-click="zoomToDetail()" >Zoom</a>
+        <a href="#" ng-click="showDetail = false" >Close</a>
+    </div>
+</div>
+
+<div class="graphSpace">
+
+    <svg ng-attr-width="{{width}}"
+         ng-attr-height="{{height}}">
+        <line   ng-repeat="link in links"
+                class="link"
+                ng-attr-stroke-width="{{link.strokeWidth}}"
+                ng-attr-x1="{{link.source.x}}"
+                ng-attr-y1="{{link.source.y}}"
+                ng-attr-x2="{{link.target.x}}"
+                ng-attr-y2="{{link.target.y}}">
+        </line>
+        <circle ng-repeat="node in nodes"
+                ng-click="displayInfo(node)"
+                class="node"
+                r="5"
+                ng-attr-fill="{{node.color}}"
+                ng-attr-cx="{{node.x}}"
+                ng-attr-cy="{{node.y}}">
+            <title>{{node.name}}</title>
+        </circle>
+    </svg>
+
+</div>
+
+<!--<div class="graphFooter deep-orange lighten-2">-->
+    <!--<div class="containerSlider">-->
+        <!--<p class="range-field">-->
+            <!--<input type="range" id="test5" min="0" max="100" />-->
+        <!--</p>-->
+    <!--</div>-->
+<!--</div>-->

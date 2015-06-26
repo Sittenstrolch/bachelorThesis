@@ -1,0 +1,17 @@
+<div class="accountForm">
+    <div class="alert-box alert radius" ng-show="error">
+        {{error}}
+    </div>
+
+    <input type="email" class="form-control" ng-model="$parent.email" placeholder="Email-address - that is going to be your username" required>
+    <input type="text" class="form-control" ng-model="$parent.firstName" placeholder="First name" required>
+    <input type="text" class="form-control" ng-model="$parent.lastName" placeholder="Last name" required>
+
+    <input type="password" class="form-control" ng-model="$parent.password" placeholder="Password" required>
+    <input type="password" class="form-control" ng-model="$parent.passwordRepeat" placeholder="Password Repeat" required>
+
+    <input type="text" class="form-control" ng-model="$parent.accesscode" placeholder="Accesscode" required>
+
+    <button type="submit" class="btn btn-primary registrationNext" ng-disabled="registrationForm.$invalid && $parent.accesscode != 'sap2015'">Next</button>
+    <button class="warning registrationNext" ng-click="cancel()">Cancel</button>
+</div>

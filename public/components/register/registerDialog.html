@@ -1,0 +1,30 @@
+<div class="detailView loginbg">
+
+    <div>
+        <h1>N 2 O</h1>
+        <h2>Noise To Opportunity</h2>
+    </div>
+
+</div>
+
+<div class="row registrationModal">
+
+    <div class="registrationHeader">
+        <h2>Welcome to N2O</h2>
+
+        <div class="status-buttons text-center" >
+            <a ng-class="{'active': state == 'registration.socialAccounts'}" ng-click="navigateTo('registration.socialAccounts')"><span>1</span> Social Accounts</a>
+            <a ng-class="{'active': state == 'registration.account'}" ng-click="navigateTo('registration.account')"><span>2</span> Account</a>
+            <a ng-class="{'active': state == 'registration.territory'}" ng-click="navigateTo('registration.territory')"><span>3</span> Territory</a>
+        </div>
+
+    </div>
+
+    <form ng-submit="processForm()" class="registrationBody" novalidate name="registrationForm">
+
+        <!--Forms step by step-->
+        <div ui-view="registrationForm" id="form-views"></div>
+
+    </form>
+
+</div>
