@@ -155,13 +155,13 @@ function getCompanies(from, size){
 
 function compareCompanies(companies){
     var companyCount = companies.length,
-        distances = {},
         deferred = q.defer()
 
     //updateProgress(storedCompanies,companyCount, "Processing companies... ")
 
     function processCompany(){
-        var company = companies.pop()
+        var company = companies.pop(),
+            distances = {}
 
         //console.log("Processing company " + company._id + " with " + companies.length + " left")
         for(var j=0; j<companies.length; j++){
