@@ -2,7 +2,8 @@ var q               = require('q'),
     config          = require(__dirname + '/../config.js'),
     industryMapping = require(__dirname + '/../industries.js'),
     esearch         = require('elasticsearch'),
-    fs              = require('fs')
+    fs              = require('fs'),
+    clusterfck      = require('clusterfck')
 
 var elasticClient = new esearch.Client({
     host: config.database.dev_host + ':' + config.database.port
@@ -50,7 +51,13 @@ function requestAllCompanies(){
 
 
                 if(result.length > 0) {
-                    companies = companies.concat(result)
+                    var comp = []
+
+                    for(var i=0; i<result.length; i++){
+                        comp.push(result[i]._source)
+                    }
+
+                    companies = companies.concat(comp)
                     offset += result.length
                     updateProgress(offset, max)
                     //fs.writeFile(__dirname + "/companies.json", JSON.stringify(companies, null, 4), function(err){if(err){process.stderr.write(err)}})
@@ -159,62 +166,13 @@ function getCompanies(from, size){
 }
 
 function compareCompanies(companies){
-    var companyCount = companies.length,
-        deferred = q.defer()
-
-    //updateProgress(storedCompanies,companyCount, "Processing companies... ")
-
-    function processCompany(){
-        var company = companies.pop(),
-            distances = {}
-
-        //console.log("Processing company " + company._id + " with " + companies.length + " left")
-        for(var j=0; j<companies.length; j++){
-            //13 is the max Value of closeness
-            var dist = 13 - calcDistance(company._source, companies[j]._source)
-
-            if(distribution[dist])
-                distribution[dist] = distribution[dist] + 1
-            else
-                distribution[dist] = 1
-
-            if(dist != 13){
-                distances[companies[j]._id] = dist
-                //savePromises.push(saveDistance(company._id,companies[j]._id, dist))
-            }
-        }
-        //console.log(storedCompanies + "\t Finished company " + company._id + " found distances " + Object.keys(distances).length)
-        //distances = {}
-        //storedCompanies++
-
-        //if(storedCompanies%500 == 0){
-            //updateProgress(storedCompanies,companyCount, "Processing companies... ")
-        ////}
-        //if(companies.length == 0){
-        //    deferred.resolve()
-        //}else{
-        //    processCompany()
-        //}
-
-        saveDistances(company._id, distances, storedCompanies)
-            .then(function(){
-                storedCompanies++
-                //if(storedCompanies % 300 == 0){
-                    updateProgress(storedCompanies,companyCount, "Processing companies... ")
-                //}
-
-                if(companies.length == 0){
-                    deferred.resolve()
-                }else{
-                    processCompany()
-                }
-            })
-            .catch(function(err){
-                console.log(err)
-            })
-    }
-
-    processCompany()
+    var deferred = q.defer()
+    console.log("Started clustering")
+    var clusters = clusterfck.hcluster(companies, calcDistance, clusterfck.AVERAGE_LINKAGE)
+    fs.writeFile(__dirname + "/../clusters.json", JSON.stringify(clusters, null, 3), function(err){
+        console.log(err)
+        deferred.resolve()
+    })
 
     return deferred.promise
 }
@@ -399,5 +357,5 @@ function calcDistance(company1, company2){
     if(company1.employeesMin == company2.employeesMin && company2.employeesMax == company1.employeesMax)
         sizeScore = 2
 
-    return locationScore + industryScore + sizeScore
+    return ( locationScore + industryScore + sizeScore ) / 13
 }

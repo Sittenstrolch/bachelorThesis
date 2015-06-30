@@ -4,7 +4,12 @@ graphAnalyser.provider('ba_graphProvider', function(){
         this.graphData = function(){
             var deferred = $q.defer()
 
-            $http.get("/data.json", [])
+            //$http.get("/data.json", [])
+            //    .success(function(data){
+            //        deferred.resolve(data)
+            //    })
+
+            $http.get("/api/graph", [])
                 .success(function(data){
                     deferred.resolve(data)
                 })

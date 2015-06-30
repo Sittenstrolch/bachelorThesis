@@ -1,5 +1,6 @@
 'use strict';
-var config               = require('../config.js')
+var config               = require('../config.js'),
+    graphHandler         = require('./graphHandler.js')
 
 module.exports = function(app) {
 
@@ -13,6 +14,16 @@ module.exports = function(app) {
     .post(function(req, res){
 
     })
+
+  app.route('/api/graph')
+      .get(graphHandler.graph)
+
+  app.route('/api/clusters')
+      .get(graphHandler.clusters)
+
+  //QS: id : companyid
+  app.route("/api/links")
+      .get(graphHandler.linksForCompany)
 
   /**
   * GET: redirect all requests with path not starting with api or # to the same link with #
