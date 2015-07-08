@@ -25,6 +25,9 @@ module.exports = function(app) {
   app.route("/api/links")
       .get(graphHandler.linksForCompany)
 
+  app.route("/api/posts")
+      .get(graphHandler.getPosts)
+
   /**
   * GET: redirect all requests with path not starting with api or # to the same link with #
   */

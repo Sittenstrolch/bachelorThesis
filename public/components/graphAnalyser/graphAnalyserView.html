@@ -1,31 +1,135 @@
 <div class="graphHeader deep-orange lighten-2">
     <span class="graphHeaderTitle">Company Graph Analysis</span>
+    <div class="configuration">
+        <input-field>
+            <input type="text" ng-model="dummyInputs.inputFieldInput" placeholder="Cluster level">
+        </input-field>
+    </div>
 </div>
 
 <div class="graphAnalyser card" ng-show="showDetail">
     <div class="card-content">
         <div class="cardTitleWrapper row">
-            <span class="card-title black-text">{{companyDetail.name}}</span>
-            <img class="cardCompanyLogo" ng-src="{{companyDetail.logo}}">
+            <span class="card-title black-text" ng-if="detailsCompany">{{companyDetail.name}}</span>
+            <img class="cardCompanyLogo" ng-src="{{companyDetail.logo}}" ng-if="detailsCompany">
         </div>
-        <table>
+        <table ng-if="detailsCompany">
             <tbody>
                 <tr>
+                    <td>Node-Number</td>
+                    <td class="descriptionText">{{companyDetail.nodeIndex}}</td>
+                </tr>
+                <tr>
                     <td>Description</td>
-                    <td>This is a short description for the company Apple. Let me tell you this: "Great Products!"</td>
+                    <td class="descriptionText">{{companyDetail.description}}</td>
                 </tr>
                 <tr>
                     <td>Employees</td>
                     <td>From {{companyDetail.employeesMin}} to {{companyDetail.employeesMax}}</td>
                 </tr>
+                <tr>
+                    <td>Industries</td>
+                    <td><span ng-repeat="industry in companyDetail.industries">{{industry}} </span></td>
+                </tr>
+                <tr>
+                    <td>Demands</td>
+                    <td><table><tbody><tr ng-repeat="(product, demands) in companyDetail.products"> <td>{{product}}</td><td>{{demands.count}} ( {{ clusterDetail.demandGrowth[product] }} ) </td> </tr></tbody></table></td>
+                </tr>
+                <tr>
+                    <td>Average Growth</td>
+                    <td><span ng-repeat="industry in companyDetail.industries">{{clusterDetail.demandGrowth['avg']}} </span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input-field>
+                            <input type="text" ng-model="$parent.toNode" placeholder="Nodeindex">
+                        </input-field>
+                    </td>
+                    <td>
+                        <span>{{nodeDistance}}</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table ng-if="!detailsCompany">
+            <tbody>
+            <tr>
+                <td>Node-Number</td>
+                <td>{{clusterDetail.nodeIndex}}</td>
+            </tr>
+            <tr>
+                <td>Size</td>
+                <td>{{clusterDetail.size}}</td>
+            </tr>
+            <tr>
+                <td>Industry</td>
+                <td><span>{{clusterDetail.industry}} </span></td>
+            </tr>
+            <tr>
+                <td>Demands</td>
+                <td><table><tbody><tr ng-repeat="(product, demands) in clusterDetail.products"> <td>{{product}}</td><td>{{demands.count}} ( {{ clusterDetail.demandGrowth[product] }} ) </td> </tr></tbody></table></td>
+            </tr>
+            <tr>
+                <td>Average Growth</td>
+                <td><span>{{clusterDetail.demandGrowth['avg']}} </span></td>
+            </tr>
+            <tr>
+                <td>Overall Growth</td>
+                <td><span>{{clusterDetail.generalGrowth['avg']}} </span></td>
+            </tr>
+            <tr>
+                <td>
+                    <input-field>
+                        <input type="text" ng-model="$parent.toNode" placeholder="Nodeindex">
+                    </input-field>
+                </td>
+                <td>
+                    <span>{{nodeDistance}}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Average Rating</td>
+                <td><span><b>{{avgRating}}</b></span></td>
+            </tr>
+            <tr>
+                <td>Rating</td>
+                <td><span><b>{{clusterDetail.rating}}</b></span></td>
+            </tr>
             </tbody>
         </table>
 
+        <div class="clusterChart">
+            <div class="row" ng-repeat="(product, bar) in clusterStats">
+                <div class="col s6">{{product}} {{bar.percent}}%</div>
+                <div class="col s6">
+                    <div class="z-depth-4" ng-attr-style="width:{{bar.percent}}%; background-color:{{bar.color}}; color:rgba(31, 119, 180, 0)">a</div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="overallClusterChart">
+            <div class="row" ng-repeat="(product, bar) in overallClusterStats">
+                <div class="col s6">{{product}} {{bar.percent}}%</div>
+                <div class="col s6">
+                    <div class="z-depth-4" ng-attr-style="width:{{bar.percent}}%; background-color:{{bar.color}}; color:rgba(31, 119, 180, 0)">a</div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="averagHighest">
+            <div class="row">
+                <div class="col s6">Avg High {{avgHighest}}%</div>
+                <div class="col s6">
+                    <div class="z-depth-4 brown" ng-attr-style="width:{{avgHighest}}%; color:rgba(31, 119, 180, 0)">a</div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="card-action">
-        <a href="{{companyDetail.link}}" target="_blank">Homepage</a>
-        <a href="#" ng-click="zoomToDetail()" >Zoom</a>
-        <a href="#" ng-click="showDetail = false" >Close</a>
+        <!--<a href="{{companyDetail.link}}" target="_blank">Homepage</a>-->
+        <a href="#" ng-if="!detailsCompany" ng-click="getDistance(clusterDetail.nodeIndex, $parent.toNode)" >Get Distance</a>
+        <a href="#" ng-if="detailsCompany" ng-click="getDistance(companyDetail.nodeIndex, $parent.toNode)" >Get Distance</a>
+        <a href="#" ng-click="closeDetail()" >Close</a>
     </div>
 </div>
 
@@ -33,31 +137,45 @@
 
     <svg ng-attr-width="{{width}}"
          ng-attr-height="{{height}}">
-        <line   ng-repeat="link in links"
-                class="link"
-                ng-attr-stroke-width="{{link.strokeWidth}}"
-                ng-attr-x1="{{link.source.x}}"
-                ng-attr-y1="{{link.source.y}}"
-                ng-attr-x2="{{link.target.x}}"
-                ng-attr-y2="{{link.target.y}}">
-        </line>
+        <!--<line   ng-repeat="link in links"-->
+                <!--ng-if="link.visible"-->
+                <!--class="link"-->
+                <!--ng-attr-stroke-width="2"-->
+                <!--ng-attr-x1="{{link.source.x}}"-->
+                <!--ng-attr-y1="{{link.source.y}}"-->
+                <!--ng-attr-x2="{{link.target.x}}"-->
+                <!--ng-attr-y2="{{link.target.y}}">-->
+        <!--</line>-->
         <circle ng-repeat="node in nodes"
-                ng-click="displayInfo(node)"
+                ng-click="displayInfo(node, $index)"
                 class="node"
-                r="5"
+                ng-class="{'hasPost': node.hasPost>0, 'highlightNode': node.highlight , 'selectedNode': node.selected, 'clickedNode': node.clickedNode, 'detailedNode': node.showsDetail}"
+                ng-attr-r="{{node.size*4}}"
                 ng-attr-fill="{{node.color}}"
                 ng-attr-cx="{{node.x}}"
-                ng-attr-cy="{{node.y}}">
-            <title>{{node.name}}</title>
+                ng-attr-cy="{{node.y}}"
+                ng-mouseover="connections($index)"
+                ng-mouseleave="cleanConnections()"
+                >
+            <title>{{node.group}}</title>
         </circle>
     </svg>
 
 </div>
 
-<!--<div class="graphFooter deep-orange lighten-2">-->
-    <!--<div class="containerSlider">-->
-        <!--<p class="range-field">-->
-            <!--<input type="range" id="test5" min="0" max="100" />-->
-        <!--</p>-->
-    <!--</div>-->
-<!--</div>-->
+<div class="graphFooter deep-orange lighten-2 row">
+    <div class="col s1">
+        <span class="timespan">From {{minDate | date: "dd.MM.yy"}} to {{topDate | date: "dd.MM.yy"}}</span>
+    </div>
+    <div class="containerSlider col s9">
+        <p class="range-field">
+            <input type="range" id="test5" step="86400000" min="0" max="{{maxDate-minDate}}" ng-model="interval"/>
+        </p>
+    </div>
+    <div class="col s1 apply">
+        <div></div>
+        <a class="waves-effect waves-light btn " ng-click="apply()">Apply</a>
+        <a class="waves-effect waves-light btn " ng-click="rerender()">Render</a>
+        <a class="waves-effect waves-light btn " ng-click="compareCluster()">Compare</a>
+    </div>
+</div>

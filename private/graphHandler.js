@@ -1,5 +1,6 @@
 var database = require("./database.js"),
-    fs                   = require('fs')
+    fs                   = require('fs'),
+    companyCluster  = require(__dirname + '/../companyCluster.js')
 
 exports.graph = function(req, res){
     database.getAllCompanies()
@@ -80,78 +81,85 @@ function updateProgress(current, max, text){
 }
 
 exports.clusters = function(req, res){
-    var level = req.query.level
-    var array = []
+    var level = req.query.level,
+        numberOfLinks = req.query.linksPerCluster
 
-    fs.readFile(__dirname+"/../clusters.json", function(err, data){
-        var data = JSON.parse(data)
+    database.clusters(level)
+        .then(function(cluster){
+            //for(var i=0; i<cluster.length; i++){
+            //    if(cluster[i].values.length == 1){
+            //        cluster.splice(i,1)
+            //        i = i-1
+            //    }
+            //}
+            var links = []
+            if(numberOfLinks > 0)
+                links = calcClusterLinks(cluster.slice(0), numberOfLinks)
 
+            res.json({nodes: cluster.sort(function(a,b){return b.size - a.size}), links: links})
+        })
+}
 
-        plainTree(aggregate1(level, data))
+function calcClusterLinks(clusters, numberOfLinks){
+    var links = [],
+        isRunning = true,
+        index = 0
+    try {
+        while (isRunning) {
+            updateProgress(index, clusters.length, "Generating clusterlinks... ")
 
-        res.json({ cluster: array})
-    })
-
-    function aggregate1(level, tree){
-        if(level == 0){
-            return tree
-        }else if(tree.value){
-            return {value: tree.value}
-        }
-
-        return [ aggregate1(level-1, tree.left)  ,aggregate1(level-1, tree.right)  ]
-    }
-
-    function plainTree(tree){
-        if(!Array.isArray(tree))
-            array.push(objectsFromTree(tree))
-
-        if(Array.isArray(tree)){
-            for(var i=0; i<tree.length; i++){
-                if(Array.isArray(tree[i]))
-                    plainTree(tree[i])
-                else{
-                    if(tree[i].value)
-                        array.push(tree[i])
-                    else
-                        array.push(objectsFromTree(tree[i]))
-                }
-
+            if (clusters.length == 1) {
+                isRunning = false
+                return links
             }
-        }
-    }
 
-    function objectsFromTree(tree){
-        if(tree.value)
-            return [tree]
+            var cluster = clusters.shift(),
+                distance = 0,
+                clusterLinks = []
 
-        return objectsFromTree(tree.left).concat(objectsFromTree(tree.right))
-    }
-
-    function aggregate(level, tree){
-        if(level == 0){
-            return objectify( tree )
-        }else if(tree.value){
-            return {value: tree.value}
-        }
-
-        return [ objectify( aggregate(level-1, tree.left) ) , objectify( aggregate(level-1, tree.right) ) ]
-    }
-
-    function objectify(tree){
-        if(Array.isArray(tree)){
-            var arr = []
-            for(var i=0; i<tree.length; i++){
-                if(Array.isArray(tree[i]))
-                 arr = arr.concat(objectify(tree[i]))
-                else
-                    arr = [ [tree[i]], arr ]
+            for (var i = 0; i < clusters.length; i++) {
+                var cDistance = clusterDistance(cluster, clusters[i])
+                if(cDistance < 7)
+                    clusterLinks.push({
+                        source: index,
+                        target: (i + index + 1),
+                        value: cDistance
+                    })
             }
-            return arr
-        }else if(tree.value)
-            return [ { value: tree.value } ]
 
+            clusterLinks.sort(function(a,b){return a.value - b.value})
 
-        return objectify(tree.left).concat(objectify(tree.right))
+            links = links.concat(clusterLinks.slice(0,numberOfLinks))
+            index = index + 1
+        }
+    }catch(err){
+        console.log(err)
     }
+}
+
+function clusterDistance(cluster1, cluster2){
+    var distanceSum = 0
+
+    for(var i=0; i<cluster1.values.length; i++){
+        updateProgress(i, cluster1.values.length, "Calculating... ")
+        for(var j=0; j<cluster2.values.length; j++){
+            distanceSum += calcDistance(cluster1.values[i].value, cluster2.values[j].value)
+        }
+    }
+
+    return Math.round( ( distanceSum / (cluster1.values.length * cluster2.values.length) ) * 10 )
+}
+
+function calcDistance(company1, company2){
+    return companyCluster.compare(company1, company2)
+}
+
+
+exports.getPosts = function(req, res){
+    var from = req.query.from,
+        until = req.query.to
+    database.getPosts(from, until)
+        .then(function(posts){
+            res.json(posts)
+        })
 }

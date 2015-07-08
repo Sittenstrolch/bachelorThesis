@@ -2,7 +2,8 @@ var q               = require('q'),
     config          = require(__dirname + '/../config.js'),
     industryMapping = require(__dirname + '/../industries.js'),
     esearch         = require('elasticsearch'),
-    fs              = require('fs')
+    fs              = require('fs'),
+    companyCluster  = require(__dirname + '/../companyCluster.js')
 
 var elasticClient = new esearch.Client({
     host: config.database.dev_host + ':' + config.database.port
@@ -345,59 +346,5 @@ function saveDistance(id, otherId, distance){
  * possible Maximum value 13
  */
 function calcDistance(company1, company2){
-    var industryScore   = 0,
-        locationScore   = 0,
-        sizeScore       = 0
-
-    //Compare Industries
-    function hasIndustry(industry, industryArray){
-        for(var j=0; j<industryArray.length; j++){
-            if(industryMapping.industries[industryArray[j]] && industryMapping.industries[industry]){
-                if(industryMapping.industries[industryArray[j]] == industryMapping.industries[industry])
-                    return true
-            }else
-                return false
-        }
-        return false
-    }
-
-    var industryMatchCount = 0
-    for(var i=0; i<company1.industries.length; i++){
-        if(company2.industries.indexOf(company1.industries[i]) > -1){
-            industryMatchCount++
-        }else if(hasIndustry(company1.industries[i], company2.industries))
-            industryMatchCount++
-    }
-
-    if(industryMatchCount > 4)
-        industryScore = 6
-    else if(industryMatchCount > 0)
-        industryScore = 5
-
-    //Compare locations
-    var cityMatch = false,
-        countryMatch = false
-    for(var i=0; i<company1.locations.length; i++){
-        for(var j=0; j<company2.locations.length; j++){
-            if(company1.locations[i].countryCode == company2.locations.countryCode){
-                countryMatch = true
-                if(company1.locations[i].city == company2.locations.city){
-                    cityMatch = true
-                }
-            }
-        }
-    }
-
-    if(cityMatch){
-        locationScore = 5
-    }else if(countryMatch){
-        locationScore = 2
-    }
-
-    //Compare size
-
-    if(company1.employeesMin == company2.employeesMin && company2.employeesMax == company1.employeesMax)
-        sizeScore = 2
-
-    return locationScore + industryScore + sizeScore
+    return companyCluster.compare(company1, company2)
 }

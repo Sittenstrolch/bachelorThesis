@@ -9,9 +9,6 @@ var elasticClient = new esearch.Client({
     host: config.database.dev_host + ':' + config.database.port
 })
 
-var storedCompanies = 0,
-    distribution = {}
-
 elasticClient.ping({
     requestTimeout: 2000,
     hello: "elasticsearch!"
@@ -23,161 +20,75 @@ elasticClient.ping({
         var startDate = Date.now()
 
         console.log("Started on " + new Date(startDate))
-        requestAllCompanies()
-            .then(compareCompanies)
+        getPosts()
+            .then(correctCompanies)
             .then(function(){
                 console.log("\nFinished! ")
-                console.log(distribution)
 
                 var timePassed = ( Date.now() - startDate ) / 1000 / 60
                 console.log("Time passed " + timePassed + " min")
                 process.exit(1)
             })
+            .catch(function(err){
+                console.log(err)
+            })
     }
 })
 
-function requestAllCompanies(){
-    var deferred = q.defer(),
-        offset = 0,
-        size = 10000,
-        companies = [],
-        max = 0
-
-    function makeRequest(){
-        getCompanies(offset, size)
-            .then(function(result){
-                max = result.total
-                result = result.hits
-
-
-                if(result.length > 0) {
-                    var comp = []
-
-                    for(var i=0; i<result.length; i++){
-                        comp.push(result[i]._source)
-                    }
-
-                    companies = companies.concat(comp)
-                    offset += result.length
-                    updateProgress(offset, max)
-                    //fs.writeFile(__dirname + "/companies.json", JSON.stringify(companies, null, 4), function(err){if(err){process.stderr.write(err)}})
-                    makeRequest()
-                }else{
-                    //console.log("\n Got all companies " + companies.length)
-                    deferred.resolve(companies)
-                }
-            })
-    }
-
-    makeRequest()
-    updateProgress(offset, 100)
-
-    return deferred.promise
-}
-
-function updateProgress(current, max, text){
-    process.stdout.clearLine()
-    process.stdout.cursorTo(0)
-
-    var percent = Math.round(current / max * 100),
-        progress = "",
-        message = "Loading... "
-
-    if(text)
-        message = text
-
-    for(var i=0; i<100;i+=5){
-        if(percent > i){
-            progress += "#"
-        }else{
-            progress += " "
-        }
-    }
-
-    process.stdout.write(message + percent + "% " + "["+progress+"] \t " + current + " / " + max)
-}
-
-function getCompanies(from, size){
+function getPosts(){
     var deferred = q.defer()
 
     elasticClient.search({
-        index: "ba_companies_merged",
-        type: "company",
-        size: size,
-        from: from,
-        body:{
+        index: "ba_post_companies",
+        type: "post",
+        size: 5000,
+        body: {
             filter: {
-                and: [
-                    //{
-                    //    exists: {
-                    //        field: "expertise"
-                    //    }
-                    //},
+                and:[
                     {
-                        exists: {
-                            field: "locations"
-                        }
-                    },
-                    {
-                        exists: {
-                            field: "industries"
-                        }
-                    },
-                    //{
-                    //    exists: {
-                    //        field: "founded"
-                    //    }
-                    //},
-                    {
-                        exists: {
-                            field: "employeesMin"
-                        }
-                    },
-                    {
-                        exists: {
-                            field: "employeesMax"
-                        }
-                    },
-                    //{
-                    //    exists: {
-                    //        field: "linkedin_id"
-                    //    }
-                    //},
-                    //{
-                    //    exists: {
-                    //        field: "crunchbase_uuid"
-                    //    }
-                    //},
-                    {
-                        exists: {
-                            field: "hasPost"
-                        }
-                    },
-                    {
-                        term: {
-                            hasPost: true
-                        }
+                            missing:{
+                                field: "knnProducts"
+                            }
                     }
                 ]
+
             }
         }
     }).then(function(result){
-        deferred.resolve(result.hits)
-    }).catch(function(error){
-        console.log(error)
+        var companies = []
+        for(var i=0; i<result.hits.hits.length; i++){
+            companies.push(result.hits.hits[i]._source.company.id)
+        }
+        deferred.resolve(companies)
     })
+        .catch(deferred.reject)
 
     return deferred.promise
 }
 
-function compareCompanies(companies){
-    var deferred = q.defer()
-    console.log("Started clustering")
-    var clusters = clusterfck.hcluster(companies, calcDistance, clusterfck.AVERAGE_LINKAGE)
-    fs.writeFile(__dirname + "/../clusters.json", JSON.stringify(clusters, null, 3), function(err){
-        console.log(err)
-        deferred.resolve()
-    })
+function correctCompanies(companies){
+    var deferred = q.defer(),
+        bulk = []
+
+    for(var i=0; i<companies.length;i++){
+        bulk.push({
+            update: {
+                _index: 'ba_companies_merged',
+                _type: "company",
+                _id: companies[i]
+            }
+        })
+        bulk.push({
+            doc:{
+                hasPost: false
+            }
+        })
+    }
+
+    saveBulk(bulk)
+        .then(function(){
+            deferred.resolve()
+        })
 
     return deferred.promise
 }

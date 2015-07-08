@@ -1,6 +1,8 @@
 .graphHeader {
   width: 100%;
-  height: 8rem;
+  height: 0rem;
+  display: flex;
+  visibility: hidden;
 }
 .graphHeader .graphHeaderTitle {
   color: #fff;
@@ -9,17 +11,24 @@
   float: left;
   padding-left: 2rem;
 }
+.configuration {
+  color: #fff;
+  float: right;
+}
 .graphSpace {
   width: 100%;
   height: 100%;
   padding-top: 8rem;
   margin-top: -8rem;
+  padding-bottom: 5rem;
+  margin-bottom: -5rem;
 }
 .graphFooter {
   width: 100%;
   height: 5rem;
   position: absolute;
   bottom: 0;
+  margin-bottom: 0;
 }
 .graphFooter .containerSlider {
   width: 100%;
@@ -38,6 +47,8 @@
   right: 0;
   max-width: 25rem;
   margin-right: 1rem;
+  max-height: 80%;
+  overflow: scroll;
 }
 td {
   vertical-align: top;
@@ -56,6 +67,41 @@ td {
   position: relative;
   text-align: left;
   margin-bottom: 0;
+}
+.timespan {
+  color: #fff;
+  line-height: 2.5rem;
+}
+.apply {
+  line-height: 5rem;
+}
+.hasPost {
+  stroke-width: 3px;
+  stroke: #f00;
+}
+.descriptionText {
+  font-size: 0.7rem;
+}
+.highlightNode {
+  fill: #808080;
+  stroke: #000;
+  stroke-width: 2px;
+}
+.highlightNode.hasPost {
+  fill: #f00;
+  stroke: #000;
+  stroke-width: 2px;
+}
+.selectedNode {
+  stroke: #35b1e3;
+  stroke-width: 4px;
+}
+.clickedNode {
+  stroke: #42a91b;
+  stroke-width: 4px;
+}
+.detailedNode {
+  fill: #000;
 }
 html {
   height: 100%;
