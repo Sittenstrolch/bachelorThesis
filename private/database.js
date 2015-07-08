@@ -146,26 +146,27 @@ exports.clusters = function(level){
         var data = JSON.parse(data)
 
 
-        plainTree(aggregate1(level, data))
+        //plainTree(aggregate1(level, data))
+        //
+        //var normalized = []
+        ////Normalize Cluster to all be an object containing size and values
+        //for(var i=0; i<array.length; i++){
+        //    cluster = {}
+        //    cluster.group = 0
+        //    if(Array.isArray(array[i]) ) {
+        //        cluster.size = array[i].length
+        //        cluster.values = array[i]
+        //    }else {
+        //        cluster.size = 1
+        //        cluster.values = [array[i]]
+        //    }
+        //    normalized.push(cluster)
+        //}
+        //
+        //normalized = mapIndustry(normalized)
 
-        var normalized = []
-        //Normalize Cluster to all be an object containing size and values
-        for(var i=0; i<array.length; i++){
-            cluster = {}
-            cluster.group = 0
-            if(Array.isArray(array[i]) ) {
-                cluster.size = array[i].length
-                cluster.values = array[i]
-            }else {
-                cluster.size = 1
-                cluster.values = [array[i]]
-            }
-            normalized.push(cluster)
-        }
-
-        normalized = mapIndustry(normalized)
-
-        deferred.resolve(mapSizes(normalized))
+        //deferred.resolve(mapSizes(normalized))
+        deferred.resolve(data)
     })
 
     function aggregate1(level, tree){

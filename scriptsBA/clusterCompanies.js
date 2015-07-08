@@ -3,7 +3,11 @@ var q               = require('q'),
     esearch         = require('elasticsearch'),
     fs              = require('fs'),
     clusterfck      = require('clusterfck'),
-    companyCluster  = require(__dirname + '/../companyCluster.js')
+    companyCluster  = require(__dirname + '/../companyCluster.js'),
+    cluster          = require("set-clustering"),
+    kmeans          = require("node-kmeans")
+
+var industryMapping = require(__dirname + '/../industries.js')
 
 var elasticClient = new esearch.Client({
     host: config.database.dev_host + ':' + config.database.port
@@ -173,11 +177,59 @@ function getCompanies(from, size){
 function compareCompanies(companies){
     var deferred = q.defer()
     console.log("Started clustering")
-    var clusters = clusterfck.hcluster(companies, calcDistance, clusterfck.AVERAGE_LINKAGE)
-    fs.writeFile(__dirname + "/../clusters.json", JSON.stringify(clusters, null, 3), function(err){
-        console.log(err)
-        deferred.resolve()
+    var oldCompanies = companies;
+    companies = companies.map(function(company){
+        var vector = []
+
+        //for(var industry in industryMapping.industries){
+        //
+        //    if(company.industries.indexOf(industry) > -1){
+        //        vector.push(1)
+        //    }else
+        //        vector.push(0)
+        //}
+        vector.push(parseInt(company.employeesMin))
+        vector.push(parseInt(company.employeesMax))
+
+        return vector
     })
+
+    var clusters = kmeans.clusterize(companies, {k:800}, function(err, res){
+        console.log(res.length)
+        var myUltraGoodNewSuperDupperClusters = []
+        for(var i=0;i<res.length;i++){
+            var tmpC = []
+            for(var x=0;x<res[i].clusterInd.length;x++){
+               tmpC.push({value: oldCompanies[res[i].clusterInd[x]], size: 1})
+            }
+            tmpC = {
+                group: ""+i,
+                size: tmpC.length,
+                values:tmpC
+            }
+            if(tmpC.values.length > 1)
+                myUltraGoodNewSuperDupperClusters.push(tmpC);
+        }
+        myUltraGoodNewSuperDupperClusters.sort(function (a, b) {
+            return b.values.length - a.values.length
+        })
+
+
+        fs.writeFile(__dirname + "/../clusters.json", JSON.stringify(myUltraGoodNewSuperDupperClusters.slice(1,myUltraGoodNewSuperDupperClusters.length-1), null, 3), function(err){
+            console.log(err)
+            deferred.resolve()
+        })
+    })
+    var count = 0
+    console.log(clusters.length)
+    for(var i = 0; i<clusters.length; i++){
+        if(clusters[i].length > 1){
+            console.log(clusters[i].length)
+            count++
+        }
+    }
+    console.log("count is " + count)
+
 
     return deferred.promise
 }

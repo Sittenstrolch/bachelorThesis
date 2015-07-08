@@ -93,10 +93,10 @@ exports.clusters = function(req, res){
             //    }
             //}
             var links = []
-            if(numberOfLinks > 0)
-                links = calcClusterLinks(cluster.slice(0), numberOfLinks)
+            //if(numberOfLinks > 0)
+            //    links = calcClusterLinks(cluster.slice(0), numberOfLinks)
 
-            res.json({nodes: cluster.sort(function(a,b){return b.size - a.size}), links: links})
+            res.json({nodes: cluster.sort(function(a,b){return b.length - a.length}), links: links})
         })
 }
 
