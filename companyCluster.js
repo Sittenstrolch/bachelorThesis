@@ -57,5 +57,5 @@ exports.compare = function (company1, company2){
     if(company1.employeesMin == company2.employeesMin && company2.employeesMax == company1.employeesMax)
         sizeScore = 1
 
-    return 1 - ( 0*locationScore/1 + 1*industryScore/1 + 0*sizeScore/1 )
+    return 1 - ( 2*locationScore/11 + 8*industryScore/11 + 1*sizeScore/11 )
 }

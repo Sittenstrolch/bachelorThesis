@@ -437,7 +437,7 @@ graphAnalyser.controller("graphAnalyserCtrl", ['$scope', 'ba_graphProvider', '$i
 
     //IMPORTANT!! : enter treedepth here
 
-    var treeDepth = 284
+    var treeDepth = 103
     $scope.compareCluster = function(){
         force.stop()
         var index = 0,
@@ -504,7 +504,7 @@ graphAnalyser.controller("graphAnalyserCtrl", ['$scope', 'ba_graphProvider', '$i
                     var generalGrowth = overallGrowth(allGrowth)
 
                     if(bestRating != 0 && clusterCount.length >= 3 ){
-                        if(clusterCount[0] < bestBiggestSize && avgRating < bestRating){
+                        if(avgRating < bestRating){
                             bestRating = avgRating
                             bestLevel = index
                             bestSize = sum
